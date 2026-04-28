@@ -175,6 +175,34 @@
 
   .rserves { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
 
+  /* ── SERVING STEPPER ─────────────────────── */
+  .rstepper {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+
+  .rstepper-label { font-size: 0.72rem; color: var(--muted); flex: 1; }
+
+  .step-btn {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: white; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; line-height: 1; color: var(--brown-mid);
+    transition: all 0.12s; flex-shrink: 0;
+    /* stop card toggle firing when clicking buttons */
+    pointer-events: all;
+  }
+  .step-btn:hover { border-color: var(--brown-light); background: var(--cream); color: var(--brown); }
+  .step-btn:active { transform: scale(0.92); }
+
+  .step-val {
+    font-size: 0.82rem; font-weight: 500; color: var(--brown);
+    min-width: 20px; text-align: center;
+  }
+
   /* ── RIGHT PANEL ─────────────────────────── */
   .rpanel { display: flex; flex-direction: column; gap: 1.4rem; }
 
@@ -211,6 +239,7 @@
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .mserves { font-size: 0.7rem; color: var(--muted); }
+  .mserves-adj { color: var(--green); font-weight: 500; }
 
   .xbtn {
     background: none; border: none; cursor: pointer;
@@ -296,6 +325,9 @@
 <script>
 // ── STATE ─────────────────────────────────────────────
 const selected = new Set();
+// servings[idx] = how many servings the user wants for recipe idx
+// starts at the recipe's default serves value when first selected
+const servings = {};
 let activeFilter = 'All';
 
 // ── DYNAMIC TYPE COLOURS ──────────────────────────────
@@ -390,17 +422,50 @@ function buildGrid() {
             ${r.cookTime}
           </span>
         </div>
-        <div class="rserves">Serves ${r.serves} · ${r.author}</div>
+        <div class="rserves">Base: ${r.serves} servings · ${r.author}</div>
+        <div class="rstepper">
+          <span class="rstepper-label">Servings</span>
+          <button class="step-btn" data-idx="${idx}" data-dir="-1">−</button>
+          <span class="step-val" id="sv-${idx}">${servings[idx] ?? r.serves}</span>
+          <button class="step-btn" data-idx="${idx}" data-dir="1">+</button>
+        </div>
       </div>`;
 
     card.addEventListener('click', () => toggle(idx));
+
+    // Stepper buttons — prevent the click bubbling up to card toggle
+    card.querySelectorAll('.step-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const i = parseInt(btn.dataset.idx);
+        const dir = parseInt(btn.dataset.dir);
+        const current = servings[i] ?? RECIPES[i].serves;
+        const next = Math.max(1, current + dir);
+        servings[i] = next;
+        // Update the display value in-place (no full rebuild needed)
+        const valEl = document.getElementById('sv-' + i);
+        if (valEl) valEl.textContent = next;
+        // If this recipe is selected, refresh meal plan + shopping list
+        if (selected.has(i)) {
+          renderMealPlan();
+          renderShopList();
+        }
+      });
+    });
+
     grid.appendChild(card);
   });
 }
 
 // ── TOGGLE ────────────────────────────────────────────
 function toggle(idx) {
-  selected.has(idx) ? selected.delete(idx) : selected.add(idx);
+  if (selected.has(idx)) {
+    selected.delete(idx);
+  } else {
+    selected.add(idx);
+    // Initialise serving count to recipe default if not already set
+    if (servings[idx] === undefined) servings[idx] = RECIPES[idx].serves;
+  }
   buildGrid();
   renderMealPlan();
   renderShopList();
