@@ -1,526 +1,98 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Recipe Planner</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+# Recipe Planner
 
-  :root {
-    --cream: #FAF7F2;
-    --white: #FFFFFF;
-    --brown: #3D2B1F;
-    --brown-mid: #6B4C3B;
-    --brown-light: #A07850;
-    --accent: #C0392B;
-    --accent-soft: #F0E0DC;
-    --green: #2C5F2E;
-    --green-soft: #D4E8D4;
-    --border: #E8E0D6;
-    --muted: #8B7355;
-    --shadow: 0 2px 16px rgba(61,43,31,0.09);
-    --shadow-hover: 0 6px 28px rgba(61,43,31,0.16);
-  }
+A simple offline recipe planner. No internet required after first load (fonts are loaded from Google Fonts on first open).
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--brown);
-    min-height: 100vh;
-  }
+---
 
-  /* ── HEADER ─────────────────────────────── */
-  header {
-    background: var(--brown);
-    color: var(--cream);
-    padding: 0 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 62px;
-    position: sticky;
-    top: 0;
-    z-index: 200;
-  }
+## How to use
 
-  .logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.35rem;
-    font-weight: 700;
-  }
-  .logo span { color: #E8B89A; }
+1. Open `index.html` in any modern browser (Chrome, Firefox, Safari, Edge).
+2. Click recipe cards to add them to your meal plan.
+3. The shopping list builds automatically, combining duplicate ingredients.
 
-  .header-pills { display: flex; gap: 10px; }
+---
 
-  .pill {
-    background: rgba(255,255,255,0.11);
-    border-radius: 999px;
-    padding: 4px 13px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: #E0D0C4;
-  }
-  .pill strong { color: #fff; }
+## How to add a new recipe
 
-  /* ── LAYOUT ──────────────────────────────── */
-  .main {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem;
-    display: grid;
-    grid-template-columns: 1fr 356px;
-    gap: 2rem;
-    align-items: start;
-  }
+1. **Add your photo** to the `images/` folder.
+   - Any JPEG or PNG works. Try to use a roughly square or landscape crop.
+   - Example filename: `chicken_tikka.jpg`
 
-  /* ── SECTION HEADING ─────────────────────── */
-  .sh {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: var(--brown);
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .sh::after { content: ''; flex:1; height:1px; background: var(--border); }
+2. **Open `recipes.js`** in any text editor (Notepad, TextEdit, VS Code, etc.).
 
-  /* ── FILTER BAR ──────────────────────────── */
-  .filters { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+3. **Scroll to the bottom** of the file where it says:
+   ```
+   // ── ADD NEW RECIPES BELOW THIS LINE ────
+   ```
 
-  .fbtn {
-    padding: 5px 14px;
-    border-radius: 999px;
-    border: 1.5px solid var(--border);
-    background: white;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--brown-mid);
-    cursor: pointer;
-    transition: all 0.14s;
-  }
-  .fbtn:hover { border-color: var(--brown-light); color: var(--brown); }
-  .fbtn.on { background: var(--brown); border-color: var(--brown); color: #fff; }
+4. **Paste and fill in** a new recipe block:
+   ```js
+   {
+     name: "Chicken Tikka Masala",
+     type: "White Meat",
+     image: "images/chicken_tikka.jpg",
+     cookTime: "30 min",
+     prepTime: "15 min",
+     serves: 4,
+     author: "Me",
+     description: "A short description.",
+     ingredients: [
+       { name: "Chicken Breast", value: 600,  unit: "g"     },
+       { name: "Tikka Paste",    value: 4,    unit: "tbsp"  },
+       { name: "Coconut Milk",   value: 400,  unit: "ml"    },
+       { name: "Onion",          value: 1,    unit: "whole" },
+     ],
+   },
+   ```
+   > ⚠️ Don't forget the **comma** after the closing `}`.
 
-  /* ── RECIPE GRID ─────────────────────────── */
-  .recipe-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 1.2rem;
-  }
+5. **Save `recipes.js`** and reload `index.html` in your browser — your recipe appears straight away.
 
-  .rcard {
-    background: white;
-    border-radius: 14px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.17s, box-shadow 0.17s, border-color 0.14s;
-    box-shadow: var(--shadow);
-    border: 2px solid transparent;
-    position: relative;
-    user-select: none;
-  }
-  .rcard:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
-  .rcard.sel { border-color: var(--green); }
-  .rcard.sel .check { display: flex; }
+---
 
-  .check {
-    display: none;
-    position: absolute;
-    top: 9px; right: 9px;
-    width: 24px; height: 24px;
-    background: var(--green);
-    border-radius: 50%;
-    align-items: center; justify-content: center;
-  }
-  .check svg { width: 13px; height: 13px; }
+## Recipe types
 
-  .rimg {
-    width: 100%; height: 148px;
-    object-fit: cover; display: block;
-    background: var(--border);
-  }
+The filter bar is generated automatically from whatever `type` values exist in `recipes.js`. You can use any type you like:
 
-  .rbody { padding: 11px 13px 13px; }
+| Value         | Notes                     |
+|---------------|---------------------------|
+| `Vegetarian`  | Built-in green style      |
+| `Fish`        | Built-in blue style       |
+| `Red Meat`    | Built-in red style        |
+| `White Meat`  | Built-in amber style      |
+| Anything else | Gets an auto-assigned colour |
 
-  .rname {
-    font-family: 'Playfair Display', serif;
-    font-size: 0.97rem;
-    font-weight: 600;
-    line-height: 1.3;
-    color: var(--brown);
-    margin-bottom: 6px;
-  }
+---
 
-  .rmeta { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+## Ingredient units
 
-  .tag {
-    font-size: 0.7rem; font-weight: 500;
-    padding: 2px 8px; border-radius: 999px;
-  }
-  .tag-Vegetarian  { background: var(--green-soft); color: var(--green); }
-  .tag-Fish        { background: #D4E4F0; color: #1A5276; }
-  .tag-Red\.Meat, .tag-Red-Meat  { background: var(--accent-soft); color: var(--accent); }
-  .tag-White\.Meat, .tag-White-Meat { background: #FFF3DC; color: #7D5A00; }
+Recognised units (grouped on the shopping list):
 
-  .rtime {
-    font-size: 0.72rem; color: var(--muted);
-    display: flex; align-items: center; gap: 3px;
-  }
-  .rtime svg { width: 11px; height: 11px; }
+| Unit            | Group shown         |
+|-----------------|---------------------|
+| `g`, `kg`       | Weight              |
+| `ml`, `l`       | Liquids             |
+| `whole`         | Whole items (no unit shown) |
+| `tbsp`          | Tablespoons         |
+| `tsp`           | Teaspoons           |
+| `cup`           | Cups                |
+| `bunch`, `slice`, `sprig` | Fresh produce |
+| anything else   | Other               |
 
-  .rserves { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
+---
 
-  /* ── RIGHT PANEL ─────────────────────────── */
-  .rpanel { display: flex; flex-direction: column; gap: 1.4rem; }
+## File structure
 
-  .pbox {
-    background: white;
-    border-radius: 14px;
-    padding: 1.2rem;
-    box-shadow: var(--shadow);
-  }
+```
+recipe_planner/
+├── index.html      ← the app (don't edit)
+├── recipes.js      ← your recipe data (edit this)
+├── README.md       ← this file
+└── images/
+    ├── Cacio_e_Pepe.jpg
+    ├── One_pot_pasta.jpg
+    ├── Bean_Halloumi_Stew.jpg
+    └── Beef_Guinness_Hotpot.jpg
+```
 
-  /* meal plan */
-  .empty-state {
-    text-align: center;
-    padding: 1.4rem 1rem;
-    color: var(--muted);
-    font-size: 0.88rem;
-  }
-  .empty-state .ico { font-size: 1.8rem; margin-bottom: 7px; opacity: 0.45; }
-
-  .mitem {
-    display: flex; align-items: center; gap: 10px;
-    padding: 9px 0; border-bottom: 1px solid var(--border);
-  }
-  .mitem:last-child { border-bottom: none; }
-
-  .mthumb {
-    width: 42px; height: 42px; border-radius: 7px;
-    object-fit: cover; flex-shrink: 0; background: var(--border);
-  }
-
-  .minfo { flex: 1; min-width: 0; }
-  .mname {
-    font-size: 0.85rem; font-weight: 500; color: var(--brown);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .mserves { font-size: 0.7rem; color: var(--muted); }
-
-  .xbtn {
-    background: none; border: none; cursor: pointer;
-    color: var(--muted); font-size: 17px; line-height: 1;
-    padding: 2px 5px; border-radius: 4px; transition: all 0.12s; flex-shrink: 0;
-  }
-  .xbtn:hover { color: var(--accent); background: var(--accent-soft); }
-
-  .clear-btn {
-    width: 100%; margin-top: 11px; padding: 7px;
-    background: none; border: 1.5px solid var(--border); border-radius: 8px;
-    font-family: 'DM Sans', sans-serif; font-size: 0.8rem; color: var(--muted);
-    cursor: pointer; transition: all 0.14s; display: none;
-  }
-  .clear-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
-
-  /* shopping list */
-  .slabel {
-    font-size: 0.67rem; font-weight: 500; text-transform: uppercase;
-    letter-spacing: 0.08em; color: var(--brown-light);
-    padding: 9px 0 3px; border-bottom: 1px solid var(--border); margin-bottom: 1px;
-  }
-  .slabel:first-child { padding-top: 1px; }
-
-  .sitem {
-    display: flex; justify-content: space-between; align-items: baseline;
-    padding: 5px 0; border-bottom: 1px solid #F5F0EA; gap: 8px;
-  }
-  .sitem:last-child { border-bottom: none; }
-  .iname { font-size: 0.83rem; color: var(--brown); }
-  .iqty  { font-size: 0.76rem; color: var(--muted); white-space: nowrap; font-weight: 500; }
-
-  /* ── RESPONSIVE ──────────────────────────── */
-  @media (max-width: 820px) {
-    .main { grid-template-columns: 1fr; }
-    header { padding: 0 1rem; }
-  }
-</style>
-</head>
-<body>
-
-<header>
-  <div class="logo">Recipe<span>Planner</span></div>
-  <div class="header-pills">
-    <div class="pill"><strong id="hCount">0</strong> selected</div>
-    <div class="pill"><strong id="hIngredients">0</strong> ingredients</div>
-  </div>
-</header>
-
-<div class="main">
-
-  <!-- LEFT: recipe browser -->
-  <div>
-    <div class="sh">Browse Recipes</div>
-    <div class="filters" id="filterBar"></div>
-    <div class="recipe-grid" id="recipeGrid"></div>
-  </div>
-
-  <!-- RIGHT: meal plan + shopping list -->
-  <div class="rpanel">
-
-    <div class="pbox" id="mealBox">
-      <div class="sh" style="margin-bottom:.75rem">Meal Plan</div>
-      <div id="mealPlan">
-        <div class="empty-state"><div class="ico">🍽</div>Click a recipe to add it to your plan</div>
-      </div>
-      <button class="clear-btn" id="clearBtn" onclick="clearAll()">Clear all</button>
-    </div>
-
-    <div class="pbox">
-      <div class="sh" style="margin-bottom:.75rem">Shopping List</div>
-      <div id="shopList">
-        <div class="empty-state">Your shopping list will appear here</div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- Load recipe data from recipes.js -->
-<script src="recipes.js"></script>
-
-<script>
-// ── STATE ─────────────────────────────────────────────
-const selected = new Set();
-let activeFilter = 'All';
-
-// ── DYNAMIC TYPE COLOURS ──────────────────────────────
-// New recipe types automatically get a colour assigned
-const AUTO_PALETTE = [
-  ['#FFF3DC','#7D5A00'], // amber
-  ['#E8D4F0','#5A2D82'], // purple
-  ['#DCF0F0','#1A6060'], // teal
-  ['#F0F0DC','#4A5000'], // olive
-];
-const typeColourMap = {};
-let palIdx = 0;
-
-function tagStyle(type) {
-  const safeClass = 'tag-' + type.replace(/\s+/g, '-');
-  // Check if a CSS rule already exists for this type
-  const existing = document.querySelector('.' + CSS.escape(safeClass));
-  if (existing) return safeClass;
-
-  // Try built-in CSS first
-  const probe = document.createElement('span');
-  probe.className = 'tag ' + safeClass;
-  probe.style.visibility = 'hidden';
-  document.body.appendChild(probe);
-  const bg = getComputedStyle(probe).backgroundColor;
-  document.body.removeChild(probe);
-  if (bg !== 'rgba(0, 0, 0, 0)' && bg !== '') return safeClass;
-
-  // Auto-assign colour
-  if (!typeColourMap[type]) {
-    const [bg2, color] = AUTO_PALETTE[palIdx % AUTO_PALETTE.length];
-    palIdx++;
-    typeColourMap[type] = { bg: bg2, color };
-    const style = document.createElement('style');
-    style.textContent = `.${safeClass}{background:${bg2};color:${color};}`;
-    document.head.appendChild(style);
-  }
-  return safeClass;
-}
-
-// ── FILTER BAR ────────────────────────────────────────
-function buildFilters() {
-  const types = ['All', ...new Set(RECIPES.map(r => r.type))];
-  const bar = document.getElementById('filterBar');
-  bar.innerHTML = '';
-  types.forEach(t => {
-    const btn = document.createElement('button');
-    btn.className = 'fbtn' + (t === activeFilter ? ' on' : '');
-    btn.textContent = t;
-    btn.addEventListener('click', () => {
-      activeFilter = t;
-      document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('on'));
-      btn.classList.add('on');
-      buildGrid();
-    });
-    bar.appendChild(btn);
-  });
-}
-
-// ── RECIPE GRID ───────────────────────────────────────
-function buildGrid() {
-  const grid = document.getElementById('recipeGrid');
-  grid.innerHTML = '';
-  const visible = activeFilter === 'All'
-    ? RECIPES
-    : RECIPES.filter(r => r.type === activeFilter);
-
-  visible.forEach((r, visIdx) => {
-    const idx = RECIPES.indexOf(r);
-    const card = document.createElement('div');
-    card.className = 'rcard' + (selected.has(idx) ? ' sel' : '');
-
-    card.innerHTML = `
-      <div class="check">
-        <svg viewBox="0 0 13 13" fill="none">
-          <polyline points="2,6.5 5.5,10 11,3" stroke="white" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <img class="rimg" src="${r.image}" alt="${r.name}"
-           onerror="this.style.background='var(--border)';this.removeAttribute('src')">
-      <div class="rbody">
-        <div class="rname">${r.name}</div>
-        <div class="rmeta">
-          <span class="tag ${tagStyle(r.type)}">${r.type}</span>
-          <span class="rtime">
-            <svg viewBox="0 0 16 16" fill="none">
-              <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/>
-              <path d="M8 5v3.2l1.8 1" stroke="currentColor" stroke-width="1.4"
-                stroke-linecap="round"/>
-            </svg>
-            ${r.cookTime}
-          </span>
-        </div>
-        <div class="rserves">Serves ${r.serves} · ${r.author}</div>
-      </div>`;
-
-    card.addEventListener('click', () => toggle(idx));
-    grid.appendChild(card);
-  });
-}
-
-// ── TOGGLE ────────────────────────────────────────────
-function toggle(idx) {
-  selected.has(idx) ? selected.delete(idx) : selected.add(idx);
-  buildGrid();
-  renderMealPlan();
-  renderShopList();
-  updateHeader();
-}
-
-function clearAll() {
-  selected.clear();
-  buildGrid();
-  renderMealPlan();
-  renderShopList();
-  updateHeader();
-}
-
-// ── MEAL PLAN ─────────────────────────────────────────
-function renderMealPlan() {
-  const el = document.getElementById('mealPlan');
-  const cb = document.getElementById('clearBtn');
-  if (!selected.size) {
-    el.innerHTML = `<div class="empty-state"><div class="ico">🍽</div>Click a recipe to add it to your plan</div>`;
-    cb.style.display = 'none';
-    return;
-  }
-  cb.style.display = 'block';
-  el.innerHTML = [...selected].map(idx => {
-    const r = RECIPES[idx];
-    return `<div class="mitem">
-      <img class="mthumb" src="${r.image}" alt="${r.name}"
-           onerror="this.style.background='var(--border)';this.removeAttribute('src')">
-      <div class="minfo">
-        <div class="mname">${r.name}</div>
-        <div class="mserves">Serves ${r.serves}</div>
-      </div>
-      <button class="xbtn" onclick="toggle(${idx})" title="Remove">×</button>
-    </div>`;
-  }).join('');
-}
-
-// ── SHOPPING LIST ─────────────────────────────────────
-// Unit groups control the order and section headings.
-// Ingredients with units not listed end up in "Other".
-const UNIT_GROUPS = [
-  { units: ['g','kg'],           label: 'Weight'       },
-  { units: ['ml','l'],           label: 'Liquids'      },
-  { units: ['whole'],            label: 'Whole items'  },
-  { units: ['tbsp'],             label: 'Tablespoons'  },
-  { units: ['tsp'],              label: 'Teaspoons'    },
-  { units: ['cup'],              label: 'Cups'         },
-  { units: ['bunch','slice','sprig'], label: 'Fresh produce' },
-  { units: ['__other__'],        label: 'Other'        },
-];
-
-function renderShopList() {
-  const el = document.getElementById('shopList');
-  if (!selected.size) {
-    el.innerHTML = '<div class="empty-state">Your shopping list will appear here</div>';
-    return;
-  }
-
-  // Combine ingredients
-  const combined = {};
-  [...selected].forEach(idx => {
-    RECIPES[idx].ingredients.forEach(ing => {
-      const key = ing.name.toLowerCase();
-      if (combined[key]) {
-        combined[key].value += ing.value;
-      } else {
-        combined[key] = { name: ing.name, value: ing.value, unit: ing.unit };
-      }
-    });
-  });
-
-  // Bucket into groups
-  const buckets = UNIT_GROUPS.map(g => ({ label: g.label, items: [] }));
-  const knownUnits = new Set(UNIT_GROUPS.flatMap(g => g.units));
-
-  Object.values(combined).forEach(ing => {
-    let placed = false;
-    UNIT_GROUPS.forEach((g, gi) => {
-      if (!placed && g.units.includes(ing.unit)) {
-        buckets[gi].items.push(ing);
-        placed = true;
-      }
-    });
-    if (!placed) {
-      buckets[buckets.length - 1].items.push(ing); // Other
-    }
-  });
-
-  let html = '';
-  buckets.forEach(({ label, items }) => {
-    if (!items.length) return;
-    html += `<div class="slabel">${label}</div>`;
-    items.sort((a, b) => a.name.localeCompare(b.name)).forEach(ing => {
-      const qty = Number.isInteger(ing.value)
-        ? ing.value
-        : parseFloat(ing.value.toFixed(2));
-      const unitStr = ing.unit === 'whole' ? '' : ` ${ing.unit}`;
-      html += `<div class="sitem">
-        <span class="iname">${ing.name}</span>
-        <span class="iqty">${qty}${unitStr}</span>
-      </div>`;
-    });
-  });
-  el.innerHTML = html;
-}
-
-// ── HEADER STATS ──────────────────────────────────────
-function updateHeader() {
-  document.getElementById('hCount').textContent = selected.size;
-  const uniq = new Set();
-  [...selected].forEach(idx =>
-    RECIPES[idx].ingredients.forEach(ing => uniq.add(ing.name.toLowerCase()))
-  );
-  document.getElementById('hIngredients').textContent = uniq.size;
-}
-
-// ── INIT ──────────────────────────────────────────────
-buildFilters();
-buildGrid();
-</script>
-</body>
-</html>
+Keep all files in the same folder. If you move the folder, keep the structure intact.
