@@ -534,7 +534,7 @@ function renderShopList() {
     const r = RECIPES[idx];
     const multiplier = (servings[idx] ?? r.serves) / r.serves;
     r.ingredients.forEach(ing => {
-      const key = ing.name.toLowerCase();
+      const key = ing.name.toLowerCase() + '|' + ing.unit.toLowerCase();
       const scaledValue = ing.value * multiplier;
       if (combined[key]) {
         combined[key].value += scaledValue;
