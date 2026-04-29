@@ -150,6 +150,67 @@ const RECIPES = [
     ],
   },
 
+    {
+    name: "Lamb Burgers with Feta",
+    type: "Red Meat",
+    image: "images/Lamb_Burger.jpg",
+    cookTime: "30 min",
+    prepTime: "30 min",
+    serves: 4,
+    author: "Patrick Herlihy",
+    description: "Lamb Burgers",
+    ingredients: [
+      { name: "Red Onion",         value: 1,  	unit: "whole" },
+      { name: "Lamb Mince",  	   value: 500,  unit: "g" },
+      { name: "Sesame Buns",       value: 4,  	unit: "whole" },
+      { name: "Garlic",            value: 2,  	unit: "clove"    },
+      { name: "Lettuce",           value: 50,   unit: "g"},
+      { name: "Tomato",            value: 1,    unit: "whole"   },
+      { name: "Feta",              value: 60,   unit: "g" },
+      { name: "Olive Oil",         value: 2,    unit: "tbsp" },
+    ],
+  },
+  
+   {
+    name: "Mediterranean Chicken with Wedges",
+    type: "White Meat",
+    image: "images/Mediterranean_Chicken.jpg",
+    cookTime: "60 min",
+    prepTime: "60 min",
+    serves: 4,
+    author: "Patrick Herlihy",
+    description: "Med Chicken with Wedges",
+    ingredients: [
+      { name: "Potato",            value: 1250, unit: "g" },
+      { name: "Red Onion",  	   value: 2,    unit: "whole" },
+      { name: "Courgette",         value: 2,  	unit: "whole" },
+      { name: "Garlic",            value: 2,  	unit: "clove"    },
+      { name: "Olive",             value: 100,  unit: "g"},
+      { name: "Chicken Thigh",     value: 8,    unit: "whole"   },
+      { name: "Olive Oil",         value: 2,    unit: "tbsp" },
+    ],
+  },
+  
+    {
+    name: "Cheesy Chicken Kiev",
+    type: "White Meat",
+    image: "images/Chicken_Kiev.jpg",
+    cookTime: "2hr 30min",
+    prepTime: "2hr 30min",
+    serves: 4,
+    author: "Patrick Herlihy",
+    description: "Cheesy Chicken Kiev",
+    ingredients: [
+      { name: "Cream Cheese",      value: 180,  unit: "g" },
+      { name: "Chives",  	       value: 14,   unit: "g" },
+      { name: "Flour",             value: 30,  	unit: "g" },
+      { name: "Garlic",            value: 3,  	unit: "clove"    },
+      { name: "Egg",               value: 1,    unit: "whole"},
+      { name: "Chicken Breast",    value: 4,    unit: "whole"   },
+      { name: "Breadcrumb",        value: 125,  unit: "g" },
+    ],
+  },
+
   // ── ADD NEW RECIPES BELOW THIS LINE ──────────────────────
   // Copy and paste a block from above, then edit it.
   // Don't forget the comma after the closing } of each recipe.

@@ -497,7 +497,10 @@ function renderMealPlan() {
            onerror="this.style.background='var(--border)';this.removeAttribute('src')">
       <div class="minfo">
         <div class="mname">${r.name}</div>
-        <div class="mserves">Serves ${r.serves}</div>
+        <div class="mserves">
+          Serves <span class="${servings[idx] !== r.serves ? 'mserves-adj' : ''}">${servings[idx] ?? r.serves}</span>
+          ${servings[idx] !== r.serves ? `<span style="color:var(--muted)"> (base ${r.serves})</span>` : ''}
+        </div>
       </div>
       <button class="xbtn" onclick="toggle(${idx})" title="Remove">×</button>
     </div>`;
@@ -525,15 +528,18 @@ function renderShopList() {
     return;
   }
 
-  // Combine ingredients
+  // Combine ingredients, scaling by servings multiplier
   const combined = {};
   [...selected].forEach(idx => {
-    RECIPES[idx].ingredients.forEach(ing => {
+    const r = RECIPES[idx];
+    const multiplier = (servings[idx] ?? r.serves) / r.serves;
+    r.ingredients.forEach(ing => {
       const key = ing.name.toLowerCase();
+      const scaledValue = ing.value * multiplier;
       if (combined[key]) {
-        combined[key].value += ing.value;
+        combined[key].value += scaledValue;
       } else {
-        combined[key] = { name: ing.name, value: ing.value, unit: ing.unit };
+        combined[key] = { name: ing.name, value: scaledValue, unit: ing.unit };
       }
     });
   });
